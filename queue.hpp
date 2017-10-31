@@ -3,7 +3,7 @@
 
 //#include <queue>
 #include <mutex>
-
+#include <assert.h>
 #define	 MAX_MSG_NUMBER		2
 
 using namespace std;
