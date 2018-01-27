@@ -16,40 +16,6 @@ typedef unsigned long MPTaskID;
 #define MAX_EVENT_NUM 32
 #define MAX_W2A_BUFFER_LEN 1024
 
-//class EVENT
-//{
-//public:
-//	EVENT(){
-//		m_hWaitHandle = 0;
-//	}
-//	virtual ~EVENT(){
-//
-//	}
-//	void * m_hWaitHandle;
-//	virtual bool WaitOne(int milsecTimeout = INFINITE, bool exitContext = false){
-//		if (m_hWaitHandle == 0)
-//			return false;
-//
-//		return WaitForSingleObject(m_hWaitHandle, milsecTimeout) == WAIT_OBJECT_0;
-//	}
-//	int WaitMulti(EVENT *HandlePtr, int nCount, int fWaitAll = 0, int milsecTimeout = 0){
-//		void * pEventArray[MAX_EVENT_NUM];
-//		for (int i = 0; i< nCount; i++)
-//			pEventArray[i] = HandlePtr[i].m_hWaitHandle;
-//
-//		DWORD result = WaitForMultipleObjects(
-//			nCount,
-//			pEventArray,
-//			fWaitAll,
-//			milsecTimeout
-//			);
-//		if (result == WAIT_FAILED || result == WAIT_TIMEOUT)
-//			return false;
-//		else
-//			return (result - WAIT_OBJECT_0) + 1;
-//	}
-//};
-
 class EVENT /*: public EVENT*/
 {
 public:
