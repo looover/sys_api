@@ -1,8 +1,8 @@
 #ifndef _EVENT_
 #define _EVENT_
 
+#ifdef __WIN32
 #include <windows.h>
-
 typedef void * MPEventID;
 typedef void * MPSemaphoreID;
 typedef void * MPCriticalRegionID;
@@ -65,5 +65,42 @@ public:
 private:
 	MPSemaphoreID	m_SemaphoreID;
 };
+#else
+//#include <pthread.h>
+#include <semaphore.h>
+
+class EVENT /*: public EVENT*/
+{
+public:
+	EVENT(bool bInitialState = true){
+		sem_init(&sem, 0, bInitialState);
+	}
+	EVENT(const char * eventName, bool bInitialState = true){
+		sem_init(&sem, 0, bInitialState);
+	}
+	~EVENT(){
+		sem_destroy(&sem);
+	}
+	bool WaitOne(int milsecTimeout = 0, bool exitContext = false){
+		struct timespec timeout;
+		timeout.tv_nsec = (milsecTimeout % 1000) * 1000;
+		timeout.tv_sec = milsecTimeout / 1000;
+		sem_timedwait(&sem, &timeout);
+	}
+
+	bool Set(){
+		sem_post(&sem);
+	}
+	bool Reset(){
+		while(1);
+	}
+	//void Close(){
+	//	sem_destroy(sem_t *sem);
+	//}
+
+private:
+	sem_t	sem;
+};
+#endif
 
 #endif //_EVENT_
