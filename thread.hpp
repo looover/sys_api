@@ -51,6 +51,7 @@ class THREAD {
 public:
 	THREAD(void* (*fp)(void*), void* param){
 		thread_num = 1;
+		thread = new pthread_t[thread_num];
 		create_thread(fp, param);
 	}
 	THREAD(void* (*fp)(void*), void* param, int n){
@@ -58,20 +59,13 @@ public:
 		create_thread(fp, param);	
 	}
 	~THREAD(){
-		if(thread){
-			delete[] thread;
-		}
-		if(id){
-			delete[] id;
-		}
+		join();
 	}
 private:
 	void create_thread(void* (*fp)(void*), void* param){
 		thread = new pthread_t[thread_num];
-		id = new unsigned long[thread_num];
 		for(int i = 0; i < thread_num; i++){
-			//thread[i] = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)fp, &(void**)param[i], 0, &id[i]);
-			thread[i] = pthread_create(&id[i],  NULL, fp, ((void**)param)[i]);
+			pthread_create(&thread[i],  NULL, fp, param);
 		}	
 	}
 public:
@@ -79,23 +73,22 @@ public:
 		for(int i = 0; i < thread_num; i++){
 			pthread_cancel(thread[i]);
 		}
-
 		return 0;
 	}
 	void join(){
+		if(thread){
 			for(int i = 0; i < thread_num; i++){
-				if(thread[i]){
-					//CloseHandle(thread[i]);
-					pthread_join(thread[i], 0);
-				}
+				pthread_join(thread[i], 0);
 			}
+			delete[] thread;
+			thread = NULL;
+		}
 		//WaitForMultipleObjects(thread_num, thread, TRUE, INFINITE);
 	}
 public:
 
 private:
-	unsigned int thread_num;
-	unsigned long *id;
+	int thread_num;
 	pthread_t *thread;
 };
 

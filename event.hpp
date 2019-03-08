@@ -81,15 +81,16 @@ public:
 	~EVENT(){
 		sem_destroy(&sem);
 	}
-	bool WaitOne(int milsecTimeout = 0, bool exitContext = false){
+	int WaitOne(int milsecTimeout = 0, bool exitContext = false){
 		struct timespec timeout;
 		timeout.tv_nsec = (milsecTimeout % 1000) * 1000;
 		timeout.tv_sec = milsecTimeout / 1000;
-		sem_timedwait(&sem, &timeout);
+		
+		return sem_timedwait(&sem, &timeout);
 	}
 
-	bool Set(){
-		sem_post(&sem);
+	int Set(){
+		return sem_post(&sem);
 	}
 	bool Reset(){
 		while(1);
