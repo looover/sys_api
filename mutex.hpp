@@ -3,33 +3,31 @@
 
 #ifdef __WIN32
 #include <mutex>
-using namespace sdd;
+using namespace std;
 #else
 //#include <pthread.h>
-#include <semaphore.h>
+#include <pthread.h>
 
 class mutex /*: public EVENT*/
 {
 public:
 	mutex(bool bInitialState = true){
-	}
-	mutex(const char * eventName, bool bInitialState = true){
+		pthread_mutex_init(&mux, NULL);
 	}
 	~mutex(){
+		pthread_mutex_destroy(&mux);
 	}
 	int try_lock(){
+		pthread_mutex_trylock(&mux);
 	}
-
 	int lock(){
+		pthread_mutex_lock(&mux);
 	}
 	bool unlock(){
+		pthread_mutex_unlock(&mux);
 	}
-	//void Close(){
-	//	sem_destroy(sem_t *sem);
-	//}
-
 private:
-	sem_t	sem;
+	pthread_mutex_t mux;
 };
 #endif
 
