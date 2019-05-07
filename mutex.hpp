@@ -18,13 +18,13 @@ public:
 		pthread_mutex_destroy(&mux);
 	}
 	int try_lock(){
-		pthread_mutex_trylock(&mux);
+		return pthread_mutex_trylock(&mux);
 	}
 	int lock(){
-		pthread_mutex_lock(&mux);
+		return pthread_mutex_lock(&mux);
 	}
 	bool unlock(){
-		pthread_mutex_unlock(&mux);
+		return pthread_mutex_unlock(&mux);
 	}
 private:
 	pthread_mutex_t mux;
