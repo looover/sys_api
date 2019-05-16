@@ -136,22 +136,6 @@ private:
 #include <semaphore.h>
 #define	 MAX_MSG_NUMBER		2
 
-/*
-class Semaphore{
-private:
-	std::mutex sema;
-public:
-	void Set(){
-		sema.unlock();
-	}
-	void Wait(){
-		sema.lock();
-	}
-	void Relase(){
-		sema.unlock();
-	}
-};
-*/
 class QUEUE
 {
 public:
@@ -208,22 +192,21 @@ public:
 		void * ret = NULL;
 		pthread_mutex_lock(&Lock);
 		if (Cnt <= 0){
-			int rc = 0;
 			if(abstime){
-				rc = pthread_cond_timedwait(&NoEmpty, &Lock, abstime);
+				pthread_cond_timedwait(&NoEmpty, &Lock, abstime);
 			}
 			else{
-				rc = pthread_cond_wait(&NoEmpty, &Lock);
+				pthread_cond_wait(&NoEmpty, &Lock);
 			}
-			assert(rc == 0);
 		}
-		assert(Cnt > 0);
-		ret = Msg[Start];
-		if (++Start >= MAX_MSG_NUMBER){
-			Start = 0;
+		if(Cnt > 0){
+			ret = Msg[Start];
+			if (++Start >= MAX_MSG_NUMBER){
+				Start = 0;
+			}
+			Cnt--;
+			pthread_cond_signal(&NoFull);
 		}
-		Cnt--;
-		pthread_cond_signal(&NoFull);
 		pthread_mutex_unlock(&Lock);
 
 		return ret;

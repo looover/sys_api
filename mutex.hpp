@@ -5,7 +5,7 @@
 #include <mutex>
 using namespace std;
 #else
-//#include <pthread.h>
+
 #include <pthread.h>
 
 class mutex /*: public EVENT*/
