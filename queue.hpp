@@ -1,41 +1,36 @@
 #ifndef _QUEUE_
 #define _QUEUE_
 
-#ifdef __WIN32
-//#include <queue>
-#include <mutex>
 #include <assert.h>
-#define	 MAX_MSG_NUMBER		2
+
+#ifdef __WIN32
+#include <mutex>
 
 using namespace std;
 
 #include "event.hpp"
 
-class Semaphore{
-private:
-	std::mutex sema;
-public:
-	void Set(){
-		sema.unlock();
-	}
-	void Wait(){
-		sema.lock();
-	}
-	void Relase(){
-		sema.unlock();
-	}
-};
-
 class QUEUE
 {
 public:
-	QUEUE(){
+	QUEUE() : MAX_MSG_NUMBER(1)
+	{
 		Cnt = 0;
 		Start = 0;
 		End = 0;
+		Msg = new void *[MAX_MSG_NUMBER];
+	}
+	QUEUE(int n) : MAX_MSG_NUMBER(n)
+	{
+		Cnt = 0;
+		Start = 0;
+		End = 0;
+		Msg = new void *[MAX_MSG_NUMBER];
 	}
 	~QUEUE(){
 		assert(Cnt == 0);
+		delete Msg;
+		Msg = 0;
 	}
 	void PutIntoQueue(void*msg)
 	{
@@ -123,7 +118,7 @@ private:
 	int Start;
 	int End;
 	//void* MaxCnt;
-	void * Msg[MAX_MSG_NUMBER];
+	void ** Msg;
 
 private:
 	EVENT DataLeft;
@@ -134,25 +129,36 @@ private:
 
 #include <pthread.h>
 #include <semaphore.h>
-#define	 MAX_MSG_NUMBER		2
 
 class QUEUE
 {
 public:
-	QUEUE(){
+	QUEUE() : MAX_MSG_NUMBER(1){
+		Init();
+	}
+	QUEUE(int n) : MAX_MSG_NUMBER(n){
+		Init();
+	}
+	~QUEUE(){
+		assert(Cnt == 0);
+
+		delete Msg;
+		Msg = 0;
+
+		pthread_cond_destroy(&NoEmpty);
+		pthread_cond_destroy(&NoFull);
+		pthread_mutex_destroy(&Lock);
+	}
+	void Init(){
 		Cnt = 0;
 		Start = 0;
 		End = 0;
 
+		Msg = new void *[MAX_MSG_NUMBER];
+	
 		pthread_mutex_init(&Lock, NULL);
 		pthread_cond_init(&NoEmpty, NULL);
 		pthread_cond_init(&NoFull, NULL);
-	}
-	~QUEUE(){
-		assert(Cnt == 0);
-		pthread_cond_destroy(&NoEmpty);
-		pthread_cond_destroy(&NoFull);
-		pthread_mutex_destroy(&Lock);
 	}
 	void PutIntoQueue(void*msg)
 	{
@@ -219,15 +225,15 @@ private:
 	int Start;
 	int End;
 	//void* MaxCnt;
-	void * Msg[MAX_MSG_NUMBER];
+	void ** Msg;
 
+	const int MAX_MSG_NUMBER;
 private:
 	pthread_mutex_t		Lock;
 	pthread_cond_t		NoEmpty;
 	pthread_cond_t		NoFull;
 };
 
-
-#endif
+#endif	//!__WIN32
 
 #endif //!_QUEUE_

@@ -1,5 +1,5 @@
-#ifndef _EVENT_
-#define _EVENT_
+#ifndef _SEMAPHORE_HPP
+#define _SEMAPHORE_HPP
 
 #ifdef __WIN32
 #include <windows.h>
@@ -16,10 +16,10 @@ typedef unsigned long MPTaskID;
 #define MAX_EVENT_NUM 32
 #define MAX_W2A_BUFFER_LEN 1024
 
-class EVENT /*: public EVENT*/
+class Semaphore /*: public Semaphore*/
 {
 public:
-	EVENT(bool bInitialState = true){
+	Semaphore(bool bInitialState = true){
 		LPSECURITY_ATTRIBUTES lpEventAttributes = 0;
 		BOOL bManualReset = false;
 		LPCTSTR lpName = 0;
@@ -30,7 +30,7 @@ public:
 			bInitialState,
 			lpName);
 	}
-	EVENT(const char * eventName, bool bInitialState = true){
+	Semaphore(const char * eventName, bool bInitialState = true){
 		LPSECURITY_ATTRIBUTES lpEventAttributes = 0;
 		BOOL bManualReset = true;
 		LPCTSTR lpName = 0;
@@ -41,17 +41,17 @@ public:
 			bInitialState,
 			eventName);
 	}
-	~EVENT(){
+	~Semaphore(){
 		if (m_SemaphoreID){
 			CloseHandle(m_SemaphoreID);
 			m_SemaphoreID = 0;
 		}
 	}
-	bool WaitOne(int milsecTimeout = INFINITE, bool exitContext = false){
+	bool Wait(int milsecTimeout = INFINITE, bool exitContext = false){
 		return (WaitForSingleObject(m_SemaphoreID, milsecTimeout) == WAIT_OBJECT_0);
 	}
 
-	bool Set(){
+	bool Post(){
 		return (SetEvent(m_SemaphoreID) == TRUE);
 	}
 	bool Reset(){
@@ -69,39 +69,30 @@ private:
 //#include <pthread.h>
 #include <semaphore.h>
 
-class EVENT /*: public EVENT*/
+class Semaphore /*: public Semaphore*/
 {
 public:
-	EVENT(bool bInitialState = true){
-		sem_init(&sem, 0, bInitialState);
+	Semaphore(){
+		sem_init(&sem, 0, 0);
 	}
-	EVENT(const char * eventName, bool bInitialState = true){
-		sem_init(&sem, 0, bInitialState);
-	}
-	~EVENT(){
+	~Semaphore(){
 		sem_destroy(&sem);
 	}
-	int WaitOne(int milsecTimeout = 0, bool exitContext = false){
+	int Wait(int elapsed = 0){
 		struct timespec timeout;
-		timeout.tv_nsec = (milsecTimeout % 1000) * 1000;
-		timeout.tv_sec = milsecTimeout / 1000;
+		timeout.tv_nsec = (elapsed % 1000) * 1000;
+		timeout.tv_sec = elapsed / 1000;
 		
 		return sem_timedwait(&sem, &timeout);
 	}
 
-	int Set(){
+	int Post(){
 		return sem_post(&sem);
 	}
-	bool Reset(){
-		while(1);
-	}
-	//void Close(){
-	//	sem_destroy(sem_t *sem);
-	//}
 
 private:
 	sem_t	sem;
 };
 #endif
 
-#endif //_EVENT_
+#endif //_Semaphore_
