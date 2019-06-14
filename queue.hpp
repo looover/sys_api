@@ -3,7 +3,7 @@
 
 #include <assert.h>
 
-#ifdef __WIN32
+#ifdef _WIN32
 #include <mutex>
 
 using namespace std;
@@ -234,6 +234,6 @@ private:
 	pthread_cond_t		NoFull;
 };
 
-#endif	//!__WIN32
+#endif	//!_WIN32
 
 #endif //!_QUEUE_

@@ -1,7 +1,7 @@
 #ifndef _SEMAPHORE_HPP
 #define _SEMAPHORE_HPP
 
-#ifdef __WIN32
+#ifdef _WIN32
 #include <windows.h>
 typedef void * MPEventID;
 typedef void * MPSemaphoreID;

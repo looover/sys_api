@@ -1,7 +1,7 @@
 #ifndef _EVENT_
 #define _EVENT_
 
-#ifdef __WIN32
+#ifdef _WIN32
 #include <mutex>
 using namespace std;
 #else

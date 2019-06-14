@@ -1,7 +1,7 @@
 #ifndef __THREAD_CPP
 #define __THREAD_CPP
 
-#ifdef __WIN32
+#ifdef _WIN32
 #include <windows.h>
 class THREAD {
 	THREAD(unsigned long (*fp)(void*), void* param){
