@@ -79,11 +79,18 @@ public:
 		sem_destroy(&sem);
 	}
 	int Wait(int elapsed = 0){
-		struct timespec timeout;
-		timeout.tv_nsec = (elapsed % 1000) * 1000;
-		timeout.tv_sec = elapsed / 1000;
-		
-		return sem_timedwait(&sem, &timeout);
+		int ret = -1;
+		if(elapsed == 0){
+			sem_wait(&sem);
+		}else{
+			struct timespec timeout;
+			timeout.tv_nsec = (elapsed % 1000) * 1000;
+			timeout.tv_sec = elapsed / 1000;
+
+			ret = sem_timedwait(&sem, &timeout);
+		}
+
+		return ret;
 	}
 
 	int Post(){
