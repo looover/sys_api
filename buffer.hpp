@@ -41,8 +41,8 @@ public:
 		if (Size >= MAX_BUFFER_SIZE){
 			pthread_cond_wait(&NoFull, &Lock);
 		}
-		assert(Size + len <= MAX_BUFFER_SIZE);
-		memcpy(Tail, src, len);//have a bug
+		assert(Size + len <= MAX_BUFFER_SIZE);//have a bug
+		memcpy(Tail, src, len);
 		Tail += len;
 		if (Tail >= Data + MAX_BUFFER_SIZE){
 			Tail = Data;
