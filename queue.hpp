@@ -133,7 +133,7 @@ private:
 class QUEUE
 {
 public:
-	QUEUE() : MAX_MSG_NUMBER(1){
+	QUEUE() : MAX_MSG_NUMBER(3){
 		Init();
 	}
 	QUEUE(int n) : MAX_MSG_NUMBER(n){
