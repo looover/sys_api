@@ -73,7 +73,7 @@ public:
 	*/
 	int ReadBuffer(unsigned char * dst, int len)
 	{
-		int ret = NULL;
+		int ret = 0;
 		pthread_mutex_lock(&Lock);
 		if (Size <= 0){
 			//if(abstime){
