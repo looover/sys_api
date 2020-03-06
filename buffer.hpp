@@ -11,7 +11,7 @@ public:
 		Init();
 	}
 	~BUFFER(){
-		assert(Size == 0);
+		//assert(Size == 0);
 
 		if(Data){
 			delete[] Data;
@@ -101,7 +101,7 @@ public:
 		return ret;
 	}
 	int IsEmpty(){
-		return Size;
+		return (Size == 0);
 	}
 private:
 	int Size;
