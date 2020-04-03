@@ -35,21 +35,33 @@ public:
 		pthread_cond_init(&NoEmpty, NULL);
 		pthread_cond_init(&NoFull, NULL);
 	}
-	void WriteBuffer(unsigned char * src, int len)
+	int WriteBuffer(unsigned char * src, int len, const int dly = 0)
 	{
+		int ret = 0;
 		pthread_mutex_lock(&Lock);
 		if (Size >= MAX_BUFFER_SIZE){
-			pthread_cond_wait(&NoFull, &Lock);
+			if(dly > 0){
+				struct timespec tv;
+				clock_gettime(CLOCK_REALTIME, &tv);
+				tv.tv_sec += dly;
+				ret = pthread_cond_timedwait(&NoEmpty, &Lock, &tv);
+			}else{
+				ret = pthread_cond_wait(&NoFull, &Lock);
+			}
 		}
-		assert(Size + len <= MAX_BUFFER_SIZE);//have a bug
-		memcpy(Tail, src, len);
-		Tail += len;
-		if (Tail >= Data + MAX_BUFFER_SIZE){
-			Tail = Data;
+		if(ret == 0){
+			assert(Size + len <= MAX_BUFFER_SIZE);//have a bug
+			memcpy(Tail, src, len);
+			Tail += len;
+			if (Tail >= Data + MAX_BUFFER_SIZE){
+				Tail = Data;
+			}
+			Size += len;
 		}
-		Size += len;
 		pthread_cond_signal(&NoEmpty);
 		pthread_mutex_unlock(&Lock);
+
+		return ret;
 	}
 	/*
 	void *GetNoPending(void)
@@ -71,21 +83,25 @@ public:
 		return ret;
 	}
 	*/
-	int ReadBuffer(unsigned char * dst, int len)
+	int ReadBuffer(unsigned char * dst, int len, int dly = 0)
 	{
 		int ret = 0;
 		pthread_mutex_lock(&Lock);
 		if (Size <= 0){
-			//if(abstime){
-			//	pthread_cond_timedwait(&NoEmpty, &Lock, abstime);
-			//}
-			//else{
-				pthread_cond_wait(&NoEmpty, &Lock);
-			//}
+			if(dly > 0){
+				struct timespec tv;
+				clock_gettime(CLOCK_REALTIME, &tv);
+				tv.tv_sec += dly;
+				ret = pthread_cond_timedwait(&NoEmpty, &Lock, &tv);
+			}
+			else{
+				ret = pthread_cond_wait(&NoEmpty, &Lock);
+			}
 		}
 
 		assert(Size >= len);
-		if(Size >= len){
+		if((Size >= len) && (ret == 0)){
+			ret = len;
 			memcpy(dst, Header, len);//have a bug
 			//memset(dst, 0x00, len);
 			Header += len;
@@ -93,7 +109,6 @@ public:
 				Header = Data;
 			}
 			Size -= len;
-			ret = len;
 			pthread_cond_signal(&NoFull);
 		}
 		pthread_mutex_unlock(&Lock);
