@@ -118,6 +118,16 @@ public:
 	int IsEmpty(){
 		return (Size == 0);
 	}
+	void Clear(){
+		pthread_mutex_lock(&Lock);
+
+		Size = 0;
+	
+		Tail = Data;
+		Header = Data;
+
+		pthread_mutex_unlock(&Lock);
+	}
 private:
 	int Size;
 	unsigned char * Header;

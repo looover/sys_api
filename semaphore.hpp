@@ -96,6 +96,9 @@ public:
 	int Post(){
 		return sem_post(&sem);
 	}
+	int Reset(){
+		return 0;
+	}
 
 private:
 	sem_t	sem;
