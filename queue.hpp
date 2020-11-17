@@ -3,12 +3,11 @@
 
 #include <assert.h>
 
-#ifdef _WIN32
+//#ifdef _WIN32 
+#if 0
 #include <mutex>
 
 using namespace std;
-
-#include "event.hpp"
 
 class QUEUE
 {

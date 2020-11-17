@@ -1,6 +1,13 @@
 #ifndef _BUFFER_H
 #define _BUFFER_H
 
+#ifdef _WIN32
+//#include "clock_gettime.h"
+#include <pthread_time.h>
+#endif
+
+
+
 #include <pthread.h>
 #include <semaphore.h>
 

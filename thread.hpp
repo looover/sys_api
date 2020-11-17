@@ -1,9 +1,11 @@
 #ifndef __THREAD_CPP
 #define __THREAD_CPP
 
-#ifdef _WIN32
+//#ifdef _WIN32
+#if 0
 #include <windows.h>
 class THREAD {
+public:
 	THREAD(unsigned long (*fp)(void*), void* param){
 		thread_num = 1;
 		create_thread(fp, param);
@@ -27,10 +29,10 @@ class THREAD {
 	}
 private:
 	void create_thread(unsigned long (*fp)(void*), void* param){
-		thread = new (void*)[thread_num];
-		id = new (unsigned long)[thread_num];
+		thread = new HANDLE [thread_num];
+		id = new unsigned long [thread_num];
 		for(int i = 0; i < thread_num; i++){
-			thread[i] = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)fp, &(void**)param[i], 0, &id[i]);
+			thread[i] = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)fp, &((void**)param)[i], 0, &id[i]);
 		}	
 	}
 public:
@@ -41,7 +43,7 @@ public:
 
 private:
 	unsigned int thread_num;
-	unsigned int *id;
+	unsigned long *id;
 	HANDLE *thread;
 };
 #else
