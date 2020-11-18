@@ -1,9 +1,14 @@
 #ifndef _EVENT_
 #define _EVENT_
 
-#ifdef _WIN32
+//#ifdef _WIN32
+#if 0
+#include <iostream>
 #include <mutex>
+
 using namespace std;
+using std::mutex;
+
 #else
 
 #include <pthread.h>
