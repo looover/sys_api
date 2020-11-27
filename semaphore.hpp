@@ -1,7 +1,8 @@
 #ifndef _SEMAPHORE_HPP
 #define _SEMAPHORE_HPP
 
-#ifdef _WIN32
+//#ifdef _WIN32
+#if 0
 #include <windows.h>
 typedef void * MPEventID;
 typedef void * MPSemaphoreID;
@@ -66,8 +67,9 @@ private:
 	MPSemaphoreID	m_SemaphoreID;
 };
 #else
-//#include <pthread.h>
+#include <time.h>
 #include <semaphore.h>
+//#include <pthread.h>
 
 class Semaphore /*: public Semaphore*/
 {
@@ -83,11 +85,17 @@ public:
 		if(elapsed == 0){
 			sem_wait(&sem);
 		}else{
-			struct timespec timeout;
-			timeout.tv_nsec = (elapsed % 1000) * 1000;
-			timeout.tv_sec = elapsed / 1000;
+			struct timespec ts;
+			clock_gettime(CLOCK_REALTIME, &ts);
 
-			ret = sem_timedwait(&sem, &timeout);
+			ts.tv_nsec	+= (elapsed % 1000) * 1000000;
+			ts.tv_sec	+= elapsed / 1000;
+			if(ts.tv_nsec >= 1000000000){
+				ts.tv_sec += ts.tv_nsec / 1000000000; 
+				ts.tv_nsec = ts.tv_nsec % 1000000000;
+			}
+
+			ret = sem_timedwait(&sem, &ts);
 		}
 
 		return ret;
